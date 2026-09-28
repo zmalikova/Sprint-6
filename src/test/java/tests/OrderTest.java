@@ -28,6 +28,8 @@ public class OrderTest extends BaseTest {
         MainPage mainPage = new MainPage(driver);
         OrderPage orderPage = new OrderPage(driver);
 
+        mainPage.clickCookieButton();
+
         if (useTopButton) {
             mainPage.clickOrderButtonTop();
         } else {
@@ -83,7 +85,7 @@ public class OrderTest extends BaseTest {
                         "Спортивная",
                         "+79997654321",
                         "01.10.2026",
-                        "неделя",
+                        "двое суток",
                         "Позвонить заранее"
                 )
         );
