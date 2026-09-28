@@ -58,7 +58,7 @@ public class OrderPage {
 
     // Кнопка "Заказать" на форме
     private final By orderButton =
-            By.xpath(".//*[@id='root']/div/div[2]/div[3]/button[2]");
+            By.xpath("//button[normalize-space()='Заказать']");
 
     // Кнопка "Да" в модальном окне подтверждения
     private final By confirmOrderButton =
