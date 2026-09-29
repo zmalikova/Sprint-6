@@ -58,7 +58,7 @@ public class OrderPage {
 
     // Кнопка "Заказать" на форме
     private final By orderButton =
-            By.xpath(".//*[@id='root']/div/div[2]/div[3]/button[2]");
+            By.xpath("//div[3]/button[2]");
 
     // Кнопка "Да" в модальном окне подтверждения
     private final By confirmOrderButton =
@@ -153,38 +153,30 @@ public class OrderPage {
     }
 
     public void setRentalPeriod(String period) {
-
         closeCalendar();
 
         WebElement dropdown = wait.until(
-                ExpectedConditions.presenceOfElementLocated(
-                        rentalPeriodDropdown
-                )
+                ExpectedConditions.elementToBeClickable(rentalPeriodDropdown)
         );
 
-        // Прокручиваем к выпадающему списку
         ((JavascriptExecutor) driver).executeScript(
                 "arguments[0].scrollIntoView({block:'center'});",
                 dropdown
         );
 
-        WebElement clickableDropdown = wait.until(
-                ExpectedConditions.elementToBeClickable(
-                        rentalPeriodDropdown
-                )
-        );
-
-        clickableDropdown.click();
+        dropdown.click();
 
         By option = By.xpath(
-                "//div[contains(@class,'Dropdown-option')]" +
-                        "[normalize-space()='" + period + "']"
+                "//div[contains(@class,'Dropdown-option') and normalize-space()='" + period + "']"
         );
 
-        wait.until(
-                ExpectedConditions.elementToBeClickable(option)
-        ).click();
+        WebElement optionElement = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(option)
+        );
+
+        optionElement.click();
     }
+
 
     public void selectBlackColor() {
 

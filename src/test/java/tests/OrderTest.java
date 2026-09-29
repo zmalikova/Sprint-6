@@ -1,52 +1,55 @@
 package tests;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import pageobjects.MainPage;
 import pageobjects.OrderPage;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class OrderTest {
+public class OrderTest extends BaseTest {
 
-    private WebDriver driver;
-
-    @Test
-    public void orderScooterTest() {
-
-        driver = new ChromeDriver();
-
-        driver.manage().window().maximize();
-
-        driver.get(
-                "https://qa-scooter.praktikum-services.ru/"
-        );
-
+    @ParameterizedTest
+    @MethodSource("orderData")
+    public void orderScooterTest(
+            boolean useTopButton,
+            String name,
+            String surname,
+            String address,
+            String metro,
+            String phone,
+            String deliveryDate,
+            String rentalPeriod,
+            String comment
+    ) {
+        MainPage mainPage = new MainPage(driver);
         OrderPage orderPage = new OrderPage(driver);
 
-        // Нажимаем «Заказать» на главной странице
-        driver.findElement(
-                By.xpath("//button[normalize-space()='Заказать']")
-        ).click();
+        mainPage.clickCookieButton();
+
+        if (useTopButton) {
+            mainPage.clickOrderButtonTop();
+        } else {
+            mainPage.clickOrderButtonBottom();
+        }
 
         // Первая часть формы
-        orderPage.setName("Иван");
-        orderPage.setSurname("Иванов");
-        orderPage.setAddress("Москва, ул. Тверская, 1");
-        orderPage.setMetro("Черкизовская");
-        orderPage.setPhone("+79991234567");
+        orderPage.setName(name);
+        orderPage.setSurname(surname);
+        orderPage.setAddress(address);
+        orderPage.setMetro(metro);
+        orderPage.setPhone(phone);
 
         orderPage.clickNextButton();
 
         // Вторая часть формы
-        orderPage.setDeliveryDate("30.09.2026");
-        orderPage.setRentalPeriod("сутки");
+        orderPage.setDeliveryDate(deliveryDate);
+        orderPage.setRentalPeriod(rentalPeriod);
         orderPage.selectBlackColor();
-        orderPage.setComment(
-                "Позвонить за 10 минут до доставки"
-        );
+        orderPage.setComment(comment);
 
         // Оформление заказа
         orderPage.clickOrderButton();
@@ -61,11 +64,30 @@ public class OrderTest {
         );
     }
 
-    @AfterEach
-    public void tearDown() {
-
-        if (driver != null) {
-            driver.quit();
-        }
+    private static Stream<Arguments> orderData() {
+        return Stream.of(
+                Arguments.of(
+                        true,
+                        "Иван",
+                        "Иванов",
+                        "Москва, ул. Тверская, 1",
+                        "Черкизовская",
+                        "+79991234567",
+                        "30.09.2026",
+                        "сутки",
+                        "Позвонить за 10 минут до доставки"
+                ),
+                Arguments.of(
+                        false,
+                        "Петр",
+                        "Петров",
+                        "Санкт-Петербург, Невский проспект, 10",
+                        "Спортивная",
+                        "+79997654321",
+                        "01.10.2026",
+                        "двое суток",
+                        "Позвонить заранее"
+                )
+        );
     }
 }

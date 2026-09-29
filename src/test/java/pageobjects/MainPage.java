@@ -45,14 +45,9 @@ public class MainPage {
     // Закрыть уведомление о cookie
     public void clickCookieButton() {
         try {
-            WebElement button = wait.until(
-                    ExpectedConditions.visibilityOfElementLocated(cookieButton)
-            );
-
-            ((JavascriptExecutor) driver).executeScript(
-                    "arguments[0].click();",
-                    button
-            );
+            wait.until(
+                    ExpectedConditions.elementToBeClickable(cookieButton)
+            ).click();
 
             wait.until(
                     ExpectedConditions.invisibilityOfElementLocated(cookieButton)
@@ -62,6 +57,7 @@ public class MainPage {
             // Cookie-баннер не появился
         }
     }
+
 
 
     // Нажать верхнюю кнопку «Заказать»
@@ -82,35 +78,33 @@ public class MainPage {
 
     // Нажать на вопрос FAQ
     public void clickQuestion(int index) {
-        List<WebElement> questionsList = wait.until(
-                ExpectedConditions.visibilityOfAllElementsLocatedBy(questions)
-        );
+        By question = By.id("accordion__heading-" + index);
 
-        WebElement question = questionsList.get(index);
+        WebElement questionElement = wait.until(
+                ExpectedConditions.elementToBeClickable(question)
+        );
 
         ((JavascriptExecutor) driver).executeScript(
                 "arguments[0].scrollIntoView({block: 'center'});",
-                question
+                questionElement
         );
-
-        wait.until(ExpectedConditions.elementToBeClickable(question)).click();
+        questionElement.click();
     }
-
 
     // Получить текст открытого ответа FAQ
     public String getAnswer(int index) {
-        List<WebElement> answersList = wait.until(
-                ExpectedConditions.presenceOfAllElementsLocatedBy(answers)
+        By questionLocator = By.id("accordion__heading-" + index);
+        WebElement question = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(questionLocator)
+        );
+        String answerId = question.getAttribute("aria-controls");
+        WebElement answer = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                        By.id(answerId)
+                )
         );
 
-        return wait.until(driver -> {
-            WebElement answer = answersList.get(index);
-
-            if (answer.isDisplayed()) {
-                return answer.getText();
-            }
-
-            return null;
-        });
+        return answer.getText();
     }
+
 }
